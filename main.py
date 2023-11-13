@@ -2,7 +2,7 @@
 #from xml.dom.minidom
 import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import Element, SubElement, Comment, ElementTree
-
+import  Validador
 def construir():
     #arbol = ET.parse("agenda.xml")
     a = ET.Element('a')
@@ -13,5 +13,9 @@ def construir():
     ElementTree(a).write("salida.xml")
 
 print("Inicio proyecto")
+
+aux = Validador.validar_fecha()
+print(type(aux))
+print(aux)
 
 print("Fin proyecto")
