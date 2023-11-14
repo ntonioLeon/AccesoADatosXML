@@ -36,7 +36,7 @@ def validar_fecha():
     print("La fecha constará de anno, mes y dia.")
     while not check:
         anno = input("Introduzca el anno: ")
-        if not (anno.isspace()):
+        if not anno.isspace():
             anno = anno.strip()
             if anno.isnumeric():
                 if int(anno) >= 2000 and int(anno) <= 2050:

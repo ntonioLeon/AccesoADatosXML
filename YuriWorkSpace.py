@@ -88,6 +88,7 @@ def mostrar_todos():
                 print(f"{element.tag}: {element.text}")
 
 
+'''
 vehicle_data = {
     'Matricula': 'ABC665',
     'MarcaModelo': 'Honda Civic',
@@ -98,3 +99,5 @@ vehicle_data = {
 cargar_arbol_xml()
 crear_vehiculo(vehicle_data)
 mostrar_todos()
+'''
+
