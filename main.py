@@ -1,9 +1,9 @@
 import Utiles
 import YuriWorkSpace
+file_path = ".\\datos.xml"
 
 print("Inicio proyecto")
 
-YuriWorkSpace.cargar_arbol_xml()
 Utiles.menu_basico()
 
 print("Fin proyecto")

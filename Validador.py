@@ -4,7 +4,8 @@ import datetime
 def validar_dni():
     cont = 0
     while cont < 3:
-        dni = input("Introduzca un dni valido, este debe de tener 9 caracteres, los 8 primeros numeros y el ultimo una letra. ")
+        dni = input(
+            "Introduzca un dni valido, este debe de tener 9 caracteres, los 8 primeros numeros y el ultimo una letra. ")
         if not dni.isspace():
             dni = dni.strip()  # El trim de python
             if len(dni) == 9:
@@ -75,7 +76,8 @@ def validar_fecha():
     if cont < 3:
         check = False
         while not check:
-            if int(mes) == 1 or int(mes) == 3 or int(mes) == 5 or int(mes) == 7 or int(mes) == 8 or int(mes) == 10 or int(mes) == 12:
+            if int(mes) == 1 or int(mes) == 3 or int(mes) == 5 or int(mes) == 7 or int(mes) == 8 or int(
+                    mes) == 10 or int(mes) == 12:
                 dia = input("Introduzca dia del 1 al 31: ")
                 if not (dia.isspace()):
                     dia = dia.strip()
@@ -132,13 +134,14 @@ def validar_fecha():
             print("La obtencion de la fecha se suspendio debido a que se fallaron demasiadas veces seguidas.")
             return None
 
+
 def validar_kilometraje():
     cont = 0
-    while(cont < 3):
+    while cont < 3:
         km = input("Introduzca un kilometraje valido, este debe ser un numero ")
-        if (len(km.strip()) > 0):
+        if len(km.strip()) > 0:
             km = km.strip()
-            if (km.isnumeric()):
+            if km.isnumeric():
                 return km
             else:
                 cont += 1
@@ -148,6 +151,7 @@ def validar_kilometraje():
             print("El kilometrake no puede tratarse de una cadena vacia o solo de espacios. Fallos = ", cont)
     print("La obtencion del kilometrake se suspendio debido a que se fallaron demasiadas veces seguidas.")
     return None
+
 
 def validar_id():
     cont = 0

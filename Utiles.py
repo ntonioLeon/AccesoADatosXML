@@ -15,6 +15,8 @@ def si_no(cadena):
 
 #Menus
 def menu_basico():
+    tree = YuriWorkSpace.cargar_arbol_xml()
+    root = tree.getroot()
     choice = ""
     while choice != "0":
         print("\nMenu:")
@@ -25,7 +27,7 @@ def menu_basico():
         #if choice == "1":
             #YuriWorkSpace.menu_vehiculo()
         if choice == "2":
-            AntonioWorkSpace.menu_alquiler()
+            AntonioWorkSpace.menu_alquiler(root)
         elif choice == "0":
             print("Saliendo del programa. Hasta luego!")
         else:
