@@ -169,3 +169,4 @@ def validar_id():
             print("El id no puede tratarse de una cadena vacia o solo de espacios. Fallos = ", cont)
     print("La obtencion del id se suspendio debido a que se fallaron demasiadas veces seguidas.")
     return None
+

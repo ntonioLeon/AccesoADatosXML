@@ -256,6 +256,132 @@ def finalizar_alquiler(root):
         print("No hay alquileres en el sistema")
 
 
+def modif_alq_sin_fin(root, alquiler):
+    elec = "-1"
+    while elec != "0":
+        print("1. Id Vehiculo\n2. DNI cliente\n3. Fecha de inicio\n4. Fecha de fin\n5. Kilometraje inicial\n0. Salir")
+        elec = input("Elija el campo que desea modificar (1/2/3/4/5/0):\n")
+        if elec == "1":
+            print("Nueva id de vehiculo")
+            id_vehiculo = Validador.validar_id()
+            if id_vehiculo is not None:
+                if Utiles.si_no("Seguro que desea cambiar el id del vehiculo por " + id_vehiculo + "?"):
+                    alquiler[0].text = id_vehiculo
+                    print("Modificacion del id del vehiculo realizada.")
+        elif elec == "2":
+            print("Nuevo dni cliente")
+            dni_cliente = Validador.validar_dni()
+            if dni_cliente is not None:
+                if Utiles.si_no("Seguro que desea cambiar el dni del cliente por " + dni_cliente + "?"):
+                    alquiler[1].text = dni_cliente
+        elif elec == "3":
+            print("Nueva fecha de inicio")
+            fecha_ini = Validador.validar_fecha()
+            if fecha_ini is not None and Utiles.si_no("Seguro que desea cambiar la fecha de inicio por " + str(fecha_ini) + "?"):
+                alquiler[2].text = str(fecha_ini)
+        elif elec == "4":
+            print("Nueva fecha de fin")
+            fecha_fin = Validador.validar_fecha()
+            if fecha_fin is not None and Utiles.si_no("Seguro que desea cambiar la fecha de fin por " + str(fecha_fin) + "?"):
+                alquiler[3].text = str(fecha_fin)
+        elif elec == "5":
+            print("Nuevo kilometraje inicial")
+            km_ini = Validador.validar_kilometraje()
+            if km_ini is not None and Utiles.si_no("Seguro que desea cambiar el kilometraje inicial por " + km_ini + "?"):
+                alquiler[5].text = str(km_ini)
+        elif elec == "0":
+            print("Finalizando modificacion")
+        prettify(root)
+        ElementTree(root).write(file_path)
+
+
+def modif_alq_fin(root, alquiler):
+    elec = "-1"
+    while elec != "0":
+        print("1. Id Vehiculo\n2. DNI cliente\n3. Fecha de inicio\n4. Fecha de fin\n5. Kilometraje inicial\n6. Kilometraje final\n7. Fecha de devolucion\n8. Recargo0. Salir")
+        elec = input("Elija el campo que desea modificar (1/2/3/4/5/6/7/8/0):\n")
+        if elec == "1":
+            print("Nueva id de vehiculo")
+            id_vehiculo = Validador.validar_id()
+            if id_vehiculo is not None:
+                if Utiles.si_no("Seguro que desea cambiar el id del vehiculo por " + id_vehiculo + "?"):
+                    alquiler[0].text = id_vehiculo
+                    print("Modificacion del id del vehiculo realizada.")
+        elif elec == "2":
+            print("Nuevo dni cliente")
+            dni_cliente = Validador.validar_dni()
+            if dni_cliente is not None:
+                if Utiles.si_no("Seguro que desea cambiar el dni del cliente por " + dni_cliente + "?"):
+                    alquiler[1].text = dni_cliente
+        elif elec == "3":
+            print("Nueva fecha de inicio")
+            fecha_ini = Validador.validar_fecha()
+            if fecha_ini is not None and Utiles.si_no("Seguro que desea cambiar la fecha de inicio por " + str(fecha_ini) + "?"):
+                alquiler[2].text = str(fecha_ini)
+        elif elec == "4":
+            print("Nueva fecha de fin")
+            fecha_fin = Validador.validar_fecha()
+            if fecha_fin is not None and Utiles.si_no("Seguro que desea cambiar la fecha de fin por " + str(fecha_fin) + "?"):
+                alquiler[3].text = str(fecha_fin)
+        elif elec == "5":
+            print("Nuevo kilometraje inicial")
+            km_ini = Validador.validar_kilometraje()
+            if km_ini is not None and Utiles.si_no("Seguro que desea cambiar el kilometraje inicial por " + km_ini + "?"):
+                alquiler[5].text = km_ini
+        elif elec == "6":
+            print("Nuevo kilometraje final")
+            km_fin = Validador.validar_kilometraje()
+            if km_fin is not None and Utiles.si_no("Seguro que desea cambiar el kilometraje final por " + km_fin + "?"):
+                alquiler[6].text = km_fin
+        elif elec == "7":
+            print("Nueva fecha de devolucion")
+            fecha_devo = Validador.validar_fecha()
+            if fecha_devo is not None and Utiles.si_no("Seguro que desea cambiar la fecha de devolucion por " + str(fecha_devo) + "?"):
+                alquiler[4].text = str(fecha_devo)
+        elif elec == "8":
+            print("Nuevo recargo")
+            recargo = Validador.validar_kilometraje()
+            if recargo is not None and Utiles.si_no("Seguro que desea cambiar el recargo por " + recargo + "?"):
+                alquiler[8].text = recargo+"€"
+        elif elec == "0":
+            print("Finalizando modificacion")
+        prettify(root)
+        ElementTree(root).write(file_path)
+
+
+def modificar_alquiler(root):
+    done = False
+    esta = False
+    alquileres = root.find("Alquileres")
+    print(len(alquileres))
+    print(type(alquileres))
+    if alquileres is not None and len(alquileres) > 0:
+        while not done:
+            print("Modificacion de vehiculos")
+            id_alquiler = Validador.validar_id()
+            alquiler = alquileres.findall("Alquiler")
+            if alquiler is not None and len(alquiler) > 0:
+                for i in alquiler:
+                    if id_alquiler == i.attrib["idAlquiler"]:
+                        esta = True
+                        if not esta_finalizado(i, id_alquiler):
+                            modif_alq_sin_fin(root, i)
+                            print("Modificacion realizada")
+                        else:
+                            modif_alq_fin(root, i)
+                            print("Modificacion realizada")
+
+            if not esta and alquiler is not None and len(alquiler) > 0:
+                print("El id introducido no coincide con el de ningun alquiler")
+            else:
+                print("No hay alquileres en el sistema")
+
+            if not Utiles.si_no("Quiere tratar de modifucar otro alquiler?"):
+                done = True
+    else:
+        print("No hay alquileres en el sistema")
+
+
 def menu_alquiler(root):
     choice = ""
     while choice != "0":
@@ -272,8 +398,8 @@ def menu_alquiler(root):
             crear_alquiler(root)
         elif choice == "2":
             menu_busqueda(root)
-        # elif choice == "3":
-
+        elif choice == "3":
+            modificar_alquiler(root)
         elif choice == "4":
             finalizar_alquiler(root)
         elif choice == "0":
