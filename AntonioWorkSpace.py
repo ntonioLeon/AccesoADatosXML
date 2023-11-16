@@ -1,4 +1,4 @@
-# from xml.dom.minidom
+import datetime
 import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import Element, SubElement, Comment, ElementTree
 import os
@@ -24,9 +24,6 @@ def prettify(elem, level=0):
 
 
 def obtener_ultimo_id_alquiler(root):
-    tree = ET.parse(file_path)
-    root = tree.getroot()
-
     alquileres = root.find('Alquileres')
     ultimos_alquileres = alquileres.findall('Alquiler[@idAlquiler]')
 
@@ -43,11 +40,18 @@ def conseguir_precio_por_id(root, id_vehiculo):
         vehiculo = vehiculos.find("Vehiculo")
         if vehiculo is not None:
             for attr in vehiculo.attrib:
-                attrName = attr
-                attrValue = vehiculo.attrib[attr]
-                if attrValue == id_vehiculo:
+                attr_name = attr
+                attr_value = vehiculo.attrib[attr_name]
+                if attr_value == id_vehiculo:
                     return vehiculo[3].text
     return 0
+
+
+def esta_finalizado(alquiler, id_alquiler):
+    if alquiler[4].text is None and alquiler[6].text is None:
+        return False
+    else:
+        return True
 
 
 def cargar_arbol_xml():
@@ -73,8 +77,6 @@ def cargar_arbol_xml():
 
 # Alta
 def crear_alquiler(root):
-    tree = ET.parse(file_path)
-    root = tree.getroot()
     done = False
     print("Creacion de alquileres")
     while not done:
@@ -91,9 +93,8 @@ def crear_alquiler(root):
             km_del_ini = Validador.validar_kilometraje()
         if id_del_vehiculo is not None and dni_del_cliente is not None and fecha_del_ini is not None and fecha_del_fin is not None and km_del_ini is not None:
 
-            try:
-                alquileres = root.find("Alquileres")
-            except:
+            alquileres = root.find("Alquileres")
+            if alquileres is None:
                 print("Fallo al encontrar Alquileres")
                 alquileres = ET.SubElement(root, "Alquileres")
 
@@ -112,12 +113,12 @@ def crear_alquiler(root):
             km_ini.text = str(km_del_ini)
             km_fin = ET.SubElement(alquiler, "KmGinal")
             precio_final = ET.SubElement(alquiler, "PrecioFinal")
-            precio = int(str((fecha_del_fin - fecha_del_ini).days)) * float(str(conseguir_precio_por_id(root, id_del_vehiculo)))
-            print(precio)
-            precio_final.text = str(precio)
+            precio = int(str((fecha_del_fin - fecha_del_ini).days)) * float(
+                str(conseguir_precio_por_id(root, id_del_vehiculo)))
+            precio_final.text = str(precio) + "€"
 
             prettify(root)
-            tree.write(file_path)
+            ElementTree(root).write(file_path)
 
             if not Utiles.si_no("Desea dar de alta otro alquiler?"):
                 done = True
@@ -195,22 +196,62 @@ def mostrar_por_matricula(root):
 
 
 # Finalizar
+def calcular_recargo(alquiler, fecha_devo):
+    fecha = alquiler[3].text
+    print(type(fecha))
+    fecha = str(fecha)
+    fecha_aux = fecha.split("-")
+    fecha_formateada = datetime.date(int(fecha_aux[0]), int(fecha_aux[1]), int(fecha_aux[2]))
+    print(type(fecha_formateada))
+    if fecha_formateada < fecha_devo:
+        return True
+    else:
+        return False
+
+
+def finalizar(root, alquiler, id_alquiler):
+    print("Introduzca la fecha de devolucion del vehiculo")
+    fecha_devo = Validador.validar_fecha()
+    if fecha_devo is not None:
+        km_fin = Validador.validar_kilometraje()
+    if fecha_devo is not None and km_fin is not None:
+        alquiler[4].text = str(fecha_devo)
+        alquiler[6].text = km_fin
+        recargo = ET.SubElement(alquiler, "Recargo")
+        if calcular_recargo(alquiler, fecha_devo):
+            recargo.text = "50€"
+        else:
+            recargo.text = "Sin recargo"
+        prettify(root)
+        ElementTree(root).write(file_path)
+        print("Alquiler finalizado")
+    else:
+        print("Volviendo al menu de finalizacion.")
+
+
 def finalizar_alquiler(root):
     done = False
-    print("Devolucion del vehiculo.")
-    id = Validador.validar_id()
+    esta = False
     alquileres = root.find("Alquileres")
     if alquileres is not None and len(alquileres) > 0:
-        alquiler = alquileres.findall("Alquiler")
-        if alquiler is not None and len(alquiler) > 0:
-            for i in alquiler:
-                if id == alquiler.attrib["idAlquiler"]:
-                    esta = True
-
-        else:
-            print("No hay alquileres en el sistema")
-        if not esta:
-            print("El id introducido no coincide con el de ningun alquiler")
+        while not done:
+            print("Devolucion del vehiculo.")
+            id_alquiler = Validador.validar_id()
+            alquiler = alquileres.findall("Alquiler")
+            if alquiler is not None and len(alquiler) > 0:
+                for i in alquiler:
+                    if id_alquiler == i.attrib["idAlquiler"]:
+                        esta = True
+                        if not esta_finalizado(i, id_alquiler):
+                            finalizar(root, i, id_alquiler)
+                        else:
+                            print("El alquiler que desea finalizar ya fue finalizado anteriormente.")
+                if not esta:
+                    print("El id introducido no coincide con el de ningun alquiler")
+            else:
+                print("No hay alquileres en el sistema")
+            if not Utiles.si_no("Quiere tratar de finalizar otro alquiler?"):
+                done = True
     else:
         print("No hay alquileres en el sistema")
 
@@ -233,8 +274,8 @@ def menu_alquiler(root):
             menu_busqueda(root)
         # elif choice == "3":
 
-        # elif choice == "4":
-
+        elif choice == "4":
+            finalizar_alquiler(root)
         elif choice == "0":
             print("Saliendo del menu de alquileres")
         else:

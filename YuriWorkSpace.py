@@ -1,6 +1,8 @@
 import xml.etree.ElementTree as ET
 import os
-file_path=".\\datos.xml"
+
+file_path = ".\\datos.xml"
+
 
 def cargar_arbol_xml():
     if not os.path.exists(file_path):
@@ -54,10 +56,10 @@ def obtener_ultimo_id():
 
 
 def crear_vehiculo(vehiculo):
-    tree= ET.parse(file_path)
+    tree = ET.parse(file_path)
     root = tree.getroot()
 
-    id= obtener_ultimo_id()
+    id = obtener_ultimo_id()
 
     coche = ET.Element('Vehiculo', {'idVehiculo': str(id)})
 
@@ -100,4 +102,3 @@ cargar_arbol_xml()
 crear_vehiculo(vehicle_data)
 mostrar_todos()
 '''
-
