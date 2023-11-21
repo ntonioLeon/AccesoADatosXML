@@ -7,7 +7,10 @@ import Utiles
 
 file_path = ".\\datos.xml"
 
-
+'''
+Metodo que reescribe el xml para que no este en una linea y tenga una estructura valida.
+@:param elem, el elemento que va a ser reestructurado.
+'''
 def prettify(elem, level=0):
     indent = "    "  # 4 espacios por nivel
     i = "\n" + level * indent
@@ -22,30 +25,36 @@ def prettify(elem, level=0):
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
 
-
+'''
+Metodo que recorre los alquileres para saber cual es el siguiente id valido.
+@:param root, que sera recorrido en busca de alquileres.
+@:return 1 si no hay alquileres, el ultimo id + 1 si hay alquileres.
+'''
 def obtener_ultimo_id_alquiler(root):
-    alquileres = root.find('Alquileres')
-    ultimos_alquileres = alquileres.findall('Alquiler[@idAlquiler]')
+    alquileres = root.find('Alquileres') #Encuentra los alquileres.
+    ultimos_alquileres = alquileres.findall('Alquiler[@idAlquiler]') #lista con los ids de los alquileres.
 
-    if ultimos_alquileres:
-        ultimo_id = max(int(alquiler.get('idAlquiler')) for alquiler in ultimos_alquileres)
-        return ultimo_id + 1
+    if ultimos_alquileres: #Si hay ids de alquiler
+        ultimo_id = max(int(alquiler.get('idAlquiler')) for alquiler in ultimos_alquileres) #Recorremos la lista de ids.
+        return ultimo_id + 1 #devolvemos el ultimo + 1.
     else:
-        return 1
+        return 1 #Si no hay ids el id sera 1.
 
-
+'''
+Metodo que a partir de un id devuelve el precio del vehiculo.
+@:param root que sera recorrida y id del vehiculo que queremos encontrar.
+@:return el precio del vehiculo, como los id se validan no puede no encontrar un precio.
+'''
 def conseguir_precio_por_id(root, id_vehiculo):
     vehiculos = root.find("Vehiculos")
     if vehiculos is not None:
-        vehiculo = vehiculos.find("Vehiculo")
-        if vehiculo is not None:
-            for attr in vehiculo.attrib:
+        vehiculo = vehiculos.find("Vehiculo") #Nos situamos en vehiculo en el arbol.
+        if vehiculo is not None: #si hay vehiculos
+            for attr in vehiculo.attrib: #Recorremos los atributos de los vehiculos.
                 attr_name = attr
                 attr_value = vehiculo.attrib[attr_name]
-                if attr_value == id_vehiculo:
-                    return vehiculo[3].text
-    return 0
-
+                if attr_value == id_vehiculo: #si coincide con el parametro es decir lo encontramos.
+                    return vehiculo[3].text #devolvemos el precio.
 
 def esta_finalizado(alquiler, id_alquiler):
     if alquiler[4].text is None and alquiler[6].text is None:
@@ -53,7 +62,9 @@ def esta_finalizado(alquiler, id_alquiler):
     else:
         return True
 
-
+'''
+Metodo que crea el arbol si no exsite con 'Renting'. 'Vehiculos' y 'Alquileres'
+'''
 def cargar_arbol_xml():
     if not os.path.exists(file_path):
         root = ET.Element('Renting')
@@ -76,11 +87,15 @@ def cargar_arbol_xml():
 
 
 # Alta
+'''
+Metodo que pide campos, si todos son validos procede a situarse en alquileres y crear los correspondientes subelementos.
+@:param root, para ser recorrido y trabajado
+'''
 def crear_alquiler(root):
     done = False
     print("Creacion de alquileres")
-    while not done:
-        id_del_vehiculo = Validador.validar_id()
+    while not done: #Bucle que servira para realizar mas de un alquiler
+        id_del_vehiculo = Validador.validar_id(root)    #En estas lineas nos apoyaremos en los metodos de Validador para conseguir campos correctos
         if id_del_vehiculo is not None:
             dni_del_cliente = Validador.validar_dni()
         if id_del_vehiculo is not None and dni_del_cliente is not None:
@@ -88,19 +103,20 @@ def crear_alquiler(root):
             fecha_del_ini = Validador.validar_fecha()
         if id_del_vehiculo is not None and dni_del_cliente is not None and fecha_del_ini is not None:
             print("Fecha de fin:")
-            fecha_del_fin = Validador.validar_fecha()
+            fecha_del_fin = Validador.validar_fecha(fecha_del_ini)
         if id_del_vehiculo is not None and dni_del_cliente is not None and fecha_del_ini is not None and fecha_del_fin is not None:
             km_del_ini = Validador.validar_kilometraje()
         if id_del_vehiculo is not None and dni_del_cliente is not None and fecha_del_ini is not None and fecha_del_fin is not None and km_del_ini is not None:
+            #Si todos los campos estan correctos procedemos a crear el subelemento
 
-            alquileres = root.find("Alquileres")
-            if alquileres is None:
+            alquileres = root.find("Alquileres") #Nos situamos en alquileres
+            if alquileres is None: #Si no exsie los creamos
                 print("Fallo al encontrar Alquileres")
                 alquileres = ET.SubElement(root, "Alquileres")
 
-            alquiler = ET.SubElement(alquileres, "Alquiler",
-                                     idAlquiler=str(obtener_ultimo_id_alquiler(root)))
-            id_vehiculo = ET.SubElement(alquiler, "idVehiculo")
+            alquiler = ET.SubElement(alquileres, "Alquiler", #Creamos el alquiler con el id como atributo
+                                     idAlquiler=str(obtener_ultimo_id_alquiler(root))) #Obtenemos el id por medio delmetodo que recorre los alquileres
+            id_vehiculo = ET.SubElement(alquiler, "idVehiculo") #Vamos creando los subelementos uno a uno y confiriendoles valores.
             id_vehiculo.text = id_del_vehiculo
             dni_cliente = ET.SubElement(alquiler, "dniCliente")
             dni_cliente.text = dni_del_cliente
@@ -111,29 +127,22 @@ def crear_alquiler(root):
             fecha_devo = ET.SubElement(alquiler, "FechaDevolucion")
             km_ini = ET.SubElement(alquiler, "KmInicial")
             km_ini.text = str(km_del_ini)
-            km_fin = ET.SubElement(alquiler, "KmGinal")
+            km_fin = ET.SubElement(alquiler, "KmFinal")
             precio_final = ET.SubElement(alquiler, "PrecioFinal")
-            precio = int(str((fecha_del_fin - fecha_del_ini).days)) * float(
+            precio = int(str((fecha_del_fin - fecha_del_ini).days)) * float( #Linea que calcula el precio*dias
                 str(conseguir_precio_por_id(root, id_del_vehiculo)))
-            precio_final.text = str(precio) + "€"
+            precio_final.text = str(precio)
 
-            prettify(root)
-            ElementTree(root).write(file_path)
+            prettify(root) #Re hacemos la estructura del xml
+            ElementTree(root).write(file_path) #Escribimos el archivo
 
-            if not Utiles.si_no("Desea dar de alta otro alquiler?"):
+            if not Utiles.si_no("Desea dar de alta otro alquiler?"): #Preguntamos si quiere hacer otro y en caso de que no salimos
                 done = True
-        else:
+        else: #Si se falla en los campos te saca del menu.
             done = True
 
 
 # Mostrar
-def mostrar_arbol(root):
-    file = open(file_path, "r")
-    lista = file.read()
-    file.close()
-    print(lista)
-
-
 def mostrar_todos_alquileres(root):
     tree = ET.parse(file_path)
     root = tree.getroot()
@@ -141,7 +150,7 @@ def mostrar_todos_alquileres(root):
         for alquiler in alquileres:
             if "Alquiler" == alquiler.tag:
                 for attr in alquiler.attrib:
-                    print("ID del alquiler: ", attr)
+                    print("ID del alquiler: ", alquiler.attrib[attr])
                 for i in alquiler:
                     print(i.tag, ": ", i.text)
                 print()
@@ -156,7 +165,7 @@ def mostrar_por_dni(root):
                 if dni == alquiler[1].text:
                     esta = True
                     for attr in alquiler.attrib:
-                        print("ID del alquiler: ", attr)
+                        print("ID del alquiler: ", alquiler.attrib[attr])
                     for i in alquiler:
                         print(i.tag, ": ", i.text)
                     print()
@@ -185,7 +194,7 @@ def mostrar_por_matricula(root):
                     if alquiler[0].text == id_vehiculo:
                         esta_alq = True
                     for attr in alquiler.attrib:
-                        print("ID del alquiler: ", attr)
+                        print("ID del alquiler: ", alquiler.attrib[attr])
                     for i in alquiler:
                         print(i.tag, ": ", i.text)
                     print()
@@ -211,15 +220,17 @@ def calcular_recargo(alquiler, fecha_devo):
 
 def finalizar(root, alquiler, id_alquiler):
     print("Introduzca la fecha de devolucion del vehiculo")
-    fecha_devo = Validador.validar_fecha()
+    campos = str(alquiler[2].text).split("-")
+    fecha_ini = datetime.date(int(campos[0]), int(campos[1]), int(campos[2]))
+    fecha_devo = Validador.validar_fecha(fecha_ini)
     if fecha_devo is not None:
-        km_fin = Validador.validar_kilometraje()
+        km_fin = Validador.validar_kilometraje(alquiler[5].text)
     if fecha_devo is not None and km_fin is not None:
         alquiler[4].text = str(fecha_devo)
         alquiler[6].text = km_fin
         recargo = ET.SubElement(alquiler, "Recargo")
         if calcular_recargo(alquiler, fecha_devo):
-            recargo.text = "50€"
+            recargo.text = "50"
         else:
             recargo.text = "Sin recargo"
         prettify(root)
@@ -277,17 +288,20 @@ def modif_alq_sin_fin(root, alquiler):
         elif elec == "3":
             print("Nueva fecha de inicio")
             fecha_ini = Validador.validar_fecha()
-            if fecha_ini is not None and Utiles.si_no("Seguro que desea cambiar la fecha de inicio por " + str(fecha_ini) + "?"):
+            if fecha_ini is not None and Utiles.si_no(
+                    "Seguro que desea cambiar la fecha de inicio por " + str(fecha_ini) + "?"):
                 alquiler[2].text = str(fecha_ini)
         elif elec == "4":
             print("Nueva fecha de fin")
             fecha_fin = Validador.validar_fecha()
-            if fecha_fin is not None and Utiles.si_no("Seguro que desea cambiar la fecha de fin por " + str(fecha_fin) + "?"):
+            if fecha_fin is not None and Utiles.si_no(
+                    "Seguro que desea cambiar la fecha de fin por " + str(fecha_fin) + "?"):
                 alquiler[3].text = str(fecha_fin)
         elif elec == "5":
             print("Nuevo kilometraje inicial")
             km_ini = Validador.validar_kilometraje()
-            if km_ini is not None and Utiles.si_no("Seguro que desea cambiar el kilometraje inicial por " + km_ini + "?"):
+            if km_ini is not None and Utiles.si_no(
+                    "Seguro que desea cambiar el kilometraje inicial por " + km_ini + "?"):
                 alquiler[5].text = str(km_ini)
         elif elec == "0":
             print("Finalizando modificacion")
@@ -298,7 +312,8 @@ def modif_alq_sin_fin(root, alquiler):
 def modif_alq_fin(root, alquiler):
     elec = "-1"
     while elec != "0":
-        print("1. Id Vehiculo\n2. DNI cliente\n3. Fecha de inicio\n4. Fecha de fin\n5. Kilometraje inicial\n6. Kilometraje final\n7. Fecha de devolucion\n8. Recargo0. Salir")
+        print(
+            "1. Id Vehiculo\n2. DNI cliente\n3. Fecha de inicio\n4. Fecha de fin\n5. Kilometraje inicial\n6. Kilometraje final\n7. Fecha de devolucion\n8. Recargo0. Salir")
         elec = input("Elija el campo que desea modificar (1/2/3/4/5/6/7/8/0):\n")
         if elec == "1":
             print("Nueva id de vehiculo")
@@ -316,17 +331,20 @@ def modif_alq_fin(root, alquiler):
         elif elec == "3":
             print("Nueva fecha de inicio")
             fecha_ini = Validador.validar_fecha()
-            if fecha_ini is not None and Utiles.si_no("Seguro que desea cambiar la fecha de inicio por " + str(fecha_ini) + "?"):
+            if fecha_ini is not None and Utiles.si_no(
+                    "Seguro que desea cambiar la fecha de inicio por " + str(fecha_ini) + "?"):
                 alquiler[2].text = str(fecha_ini)
         elif elec == "4":
             print("Nueva fecha de fin")
             fecha_fin = Validador.validar_fecha()
-            if fecha_fin is not None and Utiles.si_no("Seguro que desea cambiar la fecha de fin por " + str(fecha_fin) + "?"):
+            if fecha_fin is not None and Utiles.si_no(
+                    "Seguro que desea cambiar la fecha de fin por " + str(fecha_fin) + "?"):
                 alquiler[3].text = str(fecha_fin)
         elif elec == "5":
             print("Nuevo kilometraje inicial")
             km_ini = Validador.validar_kilometraje()
-            if km_ini is not None and Utiles.si_no("Seguro que desea cambiar el kilometraje inicial por " + km_ini + "?"):
+            if km_ini is not None and Utiles.si_no(
+                    "Seguro que desea cambiar el kilometraje inicial por " + km_ini + "?"):
                 alquiler[5].text = km_ini
         elif elec == "6":
             print("Nuevo kilometraje final")
@@ -336,13 +354,14 @@ def modif_alq_fin(root, alquiler):
         elif elec == "7":
             print("Nueva fecha de devolucion")
             fecha_devo = Validador.validar_fecha()
-            if fecha_devo is not None and Utiles.si_no("Seguro que desea cambiar la fecha de devolucion por " + str(fecha_devo) + "?"):
+            if fecha_devo is not None and Utiles.si_no(
+                    "Seguro que desea cambiar la fecha de devolucion por " + str(fecha_devo) + "?"):
                 alquiler[4].text = str(fecha_devo)
         elif elec == "8":
             print("Nuevo recargo")
             recargo = Validador.validar_kilometraje()
             if recargo is not None and Utiles.si_no("Seguro que desea cambiar el recargo por " + recargo + "?"):
-                alquiler[8].text = recargo+"€"
+                alquiler[8].text = recargo
         elif elec == "0":
             print("Finalizando modificacion")
         prettify(root)
