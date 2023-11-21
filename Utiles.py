@@ -3,6 +3,10 @@ import YuriWorkSpace
 
 
 # Validadores
+'''
+funcion que sirve como comprobante para las preguntas al usuario.
+@:param cadena que se printeara junto a la pregunta.
+'''
 def si_no(cadena):
     print(cadena)
     while True:
@@ -16,6 +20,9 @@ def si_no(cadena):
 
 
 # Menus
+'''
+Menu basico llamado desde el main que te manda a los diferentes submenus de vehiculos y alquileres.
+'''
 def menu_basico():
     tree = YuriWorkSpace.cargar_arbol_xml()
     root = tree.getroot()

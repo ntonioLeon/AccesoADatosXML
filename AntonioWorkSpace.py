@@ -8,9 +8,11 @@ import Utiles
 file_path = ".\\datos.xml"
 
 '''
-Metodo que reescribe el xml para que no este en una linea y tenga una estructura valida.
+funcion que reescribe el xml para que no este en una linea y tenga una estructura valida.
 @:param elem, el elemento que va a ser reestructurado.
 '''
+
+
 def prettify(elem, level=0):
     indent = "    "  # 4 espacios por nivel
     i = "\n" + level * indent
@@ -25,45 +27,56 @@ def prettify(elem, level=0):
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
 
+
 '''
-Metodo que recorre los alquileres para saber cual es el siguiente id valido.
+funcion que recorre los alquileres para saber cual es el siguiente id valido.
 @:param root, que sera recorrido en busca de alquileres.
 @:return 1 si no hay alquileres, el ultimo id + 1 si hay alquileres.
 '''
-def obtener_ultimo_id_alquiler(root):
-    alquileres = root.find('Alquileres') #Encuentra los alquileres.
-    ultimos_alquileres = alquileres.findall('Alquiler[@idAlquiler]') #lista con los ids de los alquileres.
 
-    if ultimos_alquileres: #Si hay ids de alquiler
-        ultimo_id = max(int(alquiler.get('idAlquiler')) for alquiler in ultimos_alquileres) #Recorremos la lista de ids.
-        return ultimo_id + 1 #devolvemos el ultimo + 1.
+
+def obtener_ultimo_id_alquiler(root):
+    alquileres = root.find('Alquileres')  # Encuentra los alquileres.
+    ultimos_alquileres = alquileres.findall('Alquiler[@idAlquiler]')  # lista con los ids de los alquileres.
+
+    if ultimos_alquileres:  # Si hay ids de alquiler
+        ultimo_id = max(
+            int(alquiler.get('idAlquiler')) for alquiler in ultimos_alquileres)  # Recorremos la lista de ids.
+        return ultimo_id + 1  # devolvemos el ultimo + 1.
     else:
-        return 1 #Si no hay ids el id sera 1.
+        return 1  # Si no hay ids el id sera 1.
+
 
 '''
-Metodo que a partir de un id devuelve el precio del vehiculo.
+funcion que a partir de un id devuelve el precio del vehiculo.
 @:param root que sera recorrida y id del vehiculo que queremos encontrar.
 @:return el precio del vehiculo, como los id se validan no puede no encontrar un precio.
 '''
 def conseguir_precio_por_id(root, id_vehiculo):
     vehiculos = root.find("Vehiculos")
     if vehiculos is not None:
-        vehiculo = vehiculos.find("Vehiculo") #Nos situamos en vehiculo en el arbol.
-        if vehiculo is not None: #si hay vehiculos
-            for attr in vehiculo.attrib: #Recorremos los atributos de los vehiculos.
+        vehiculo = vehiculos.find("Vehiculo")  # Nos situamos en vehiculo en el arbol.
+        if vehiculo is not None:  # si hay vehiculos
+            for attr in vehiculo.attrib:  # Recorremos los atributos de los vehiculos.
                 attr_name = attr
                 attr_value = vehiculo.attrib[attr_name]
-                if attr_value == id_vehiculo: #si coincide con el parametro es decir lo encontramos.
-                    return vehiculo[3].text #devolvemos el precio.
+                if attr_value == id_vehiculo:  # si coincide con el parametro es decir lo encontramos.
+                    return vehiculo[3].text  # devolvemos el precio.
 
+
+'''
+funcion que comprueba que un alquiler esta finalizado por medio de comprobar los campos que solo se rellenan en la finalizacion
+@:param alquiler el alquiler que se comprueba.
+'''
 def esta_finalizado(alquiler, id_alquiler):
     if alquiler[4].text is None and alquiler[6].text is None:
         return False
     else:
         return True
 
+
 '''
-Metodo que crea el arbol si no exsite con 'Renting'. 'Vehiculos' y 'Alquileres'
+funcion que crea el arbol si no exsite con 'Renting'. 'Vehiculos' y 'Alquileres'
 '''
 def cargar_arbol_xml():
     if not os.path.exists(file_path):
@@ -88,14 +101,14 @@ def cargar_arbol_xml():
 
 # Alta
 '''
-Metodo que pide campos, si todos son validos procede a situarse en alquileres y crear los correspondientes subelementos.
+funcion que pide campos, si todos son validos procede a situarse en alquileres y crear los correspondientes subelementos.
 @:param root, para ser recorrido y trabajado
 '''
 def crear_alquiler(root):
     done = False
     print("Creacion de alquileres")
-    while not done: #Bucle que servira para realizar mas de un alquiler
-        id_del_vehiculo = Validador.validar_id(root)    #En estas lineas nos apoyaremos en los metodos de Validador para conseguir campos correctos
+    while not done:  # Bucle que servira para realizar mas de un alquiler
+        id_del_vehiculo = Validador.validar_id(root, "1")  # En estas lineas nos apoyaremos en los funcions de Validador para conseguir campos correctos
         if id_del_vehiculo is not None:
             dni_del_cliente = Validador.validar_dni()
         if id_del_vehiculo is not None and dni_del_cliente is not None:
@@ -107,16 +120,18 @@ def crear_alquiler(root):
         if id_del_vehiculo is not None and dni_del_cliente is not None and fecha_del_ini is not None and fecha_del_fin is not None:
             km_del_ini = Validador.validar_kilometraje()
         if id_del_vehiculo is not None and dni_del_cliente is not None and fecha_del_ini is not None and fecha_del_fin is not None and km_del_ini is not None:
-            #Si todos los campos estan correctos procedemos a crear el subelemento
+            # Si todos los campos estan correctos procedemos a crear el subelemento
 
-            alquileres = root.find("Alquileres") #Nos situamos en alquileres
-            if alquileres is None: #Si no exsie los creamos
+            alquileres = root.find("Alquileres")  # Nos situamos en alquileres
+            if alquileres is None:  # Si no exsie los creamos
                 print("Fallo al encontrar Alquileres")
                 alquileres = ET.SubElement(root, "Alquileres")
 
-            alquiler = ET.SubElement(alquileres, "Alquiler", #Creamos el alquiler con el id como atributo
-                                     idAlquiler=str(obtener_ultimo_id_alquiler(root))) #Obtenemos el id por medio delmetodo que recorre los alquileres
-            id_vehiculo = ET.SubElement(alquiler, "idVehiculo") #Vamos creando los subelementos uno a uno y confiriendoles valores.
+            alquiler = ET.SubElement(alquileres, "Alquiler",  # Creamos el alquiler con el id como atributo
+                                     idAlquiler=str(obtener_ultimo_id_alquiler(
+                                         root)))  # Obtenemos el id por medio delfuncion que recorre los alquileres
+            id_vehiculo = ET.SubElement(alquiler,
+                                        "idVehiculo")  # Vamos creando los subelementos uno a uno y confiriendoles valores.
             id_vehiculo.text = id_del_vehiculo
             dni_cliente = ET.SubElement(alquiler, "dniCliente")
             dni_cliente.text = dni_del_cliente
@@ -129,23 +144,27 @@ def crear_alquiler(root):
             km_ini.text = str(km_del_ini)
             km_fin = ET.SubElement(alquiler, "KmFinal")
             precio_final = ET.SubElement(alquiler, "PrecioFinal")
-            precio = int(str((fecha_del_fin - fecha_del_ini).days)) * float( #Linea que calcula el precio*dias
-                str(conseguir_precio_por_id(root, id_del_vehiculo)))
+            '''Linea que calcula el precio*dias por medio de restar fechas, pasarlas a dias, convertirlas a string porque 
+            castear de date a int explota y concluye multiplicando los dias por el precio/dia del vehiculo.'''
+            precio = int(str((fecha_del_fin - fecha_del_ini).days)) * float(str(conseguir_precio_por_id(root, id_del_vehiculo)))
             precio_final.text = str(precio)
 
-            prettify(root) #Re hacemos la estructura del xml
-            ElementTree(root).write(file_path) #Escribimos el archivo
+            prettify(root)  # Re hacemos la estructura del xml
+            ElementTree(root).write(file_path)  # Escribimos el archivo
 
-            if not Utiles.si_no("Desea dar de alta otro alquiler?"): #Preguntamos si quiere hacer otro y en caso de que no salimos
+            if not Utiles.si_no(
+                    "Desea dar de alta otro alquiler?"):  # Preguntamos si quiere hacer otro y en caso de que no salimos
                 done = True
-        else: #Si se falla en los campos te saca del menu.
+        else:  # Si se falla en los campos te saca del menu.
             done = True
 
 
 # Mostrar
+'''
+funcion que recorre el arbol desde la raiz y printea los alquileres
+@:param root
+'''
 def mostrar_todos_alquileres(root):
-    tree = ET.parse(file_path)
-    root = tree.getroot()
     for alquileres in root:
         for alquiler in alquileres:
             if "Alquiler" == alquiler.tag:
@@ -156,6 +175,10 @@ def mostrar_todos_alquileres(root):
                 print()
 
 
+'''
+funcion que recorre el arbol desde la raiz y printea los alquileres que correspondan a un dni
+@:param root
+'''
 def mostrar_por_dni(root):
     esta = False
     dni = Validador.validar_dni()
@@ -174,6 +197,10 @@ def mostrar_por_dni(root):
         print("El DNI introducido no se correspondia con el de nadie que hubiese realizado un alquiler")
 
 
+'''
+funcion que recorre el arbol desde la raiz y printea los alquileres que correspondan a una matricula
+@:param root
+'''
 def mostrar_por_matricula(root):
     esta = False
     esta_alq = False
@@ -205,56 +232,66 @@ def mostrar_por_matricula(root):
 
 
 # Finalizar
+'''
+funcion que comprueba si la fecha de devolucion sobrepasa la del final del alquiler
+@:param alquiler que se va a finalizar la fecha de devolucion
+@:return true si la fecha fin es menor que la de devolucion
+'''
 def calcular_recargo(alquiler, fecha_devo):
-    fecha = alquiler[3].text
-    print(type(fecha))
+    fecha = alquiler[3].text #Obtenemos la fecha final
     fecha = str(fecha)
-    fecha_aux = fecha.split("-")
-    fecha_formateada = datetime.date(int(fecha_aux[0]), int(fecha_aux[1]), int(fecha_aux[2]))
-    print(type(fecha_formateada))
-    if fecha_formateada < fecha_devo:
+    fecha_aux = fecha.split("-") #Sacamos una lista con los datos
+    fecha_formateada = datetime.date(int(fecha_aux[0]), int(fecha_aux[1]), int(fecha_aux[2]))  #Reconstruimos la fecha final
+    if fecha_formateada < fecha_devo: #Comprobamos cual es mayor
         return True
     else:
         return False
 
-
+'''
+funcion que finaliza los campos de un alquiler.
+@:param root que se escribira alquiler que se actualizara
+'''
 def finalizar(root, alquiler, id_alquiler):
     print("Introduzca la fecha de devolucion del vehiculo")
-    campos = str(alquiler[2].text).split("-")
-    fecha_ini = datetime.date(int(campos[0]), int(campos[1]), int(campos[2]))
-    fecha_devo = Validador.validar_fecha(fecha_ini)
-    if fecha_devo is not None:
-        km_fin = Validador.validar_kilometraje(alquiler[5].text)
-    if fecha_devo is not None and km_fin is not None:
+    campos = str(alquiler[2].text).split("-") #Obtenemos la fecha inicial
+    fecha_ini = datetime.date(int(campos[0]), int(campos[1]), int(campos[2])) #Reconstruimos la fecha inicial
+    fecha_devo = Validador.validar_fecha(fecha_ini) #pedimos la fecha de devolucion
+    if fecha_devo is not None: #comprobamos que los campos son validos
+        km_fin = Validador.validar_kilometraje(alquiler[5].text) #Pedimos kmfinal
+    if fecha_devo is not None and km_fin is not None: #Si los campos son correctos damos el alquiler por finalizado
+
         alquiler[4].text = str(fecha_devo)
-        alquiler[6].text = km_fin
-        recargo = ET.SubElement(alquiler, "Recargo")
-        if calcular_recargo(alquiler, fecha_devo):
+        alquiler[6].text = km_fin #Escribimos los campos
+        recargo = ET.SubElement(alquiler, "Recargo") #Creamos el campo recargo
+        if calcular_recargo(alquiler, fecha_devo): #Comprobamos si merece recargo o no y lo aplicamos si es necesario
             recargo.text = "50"
         else:
             recargo.text = "Sin recargo"
         prettify(root)
-        ElementTree(root).write(file_path)
+        ElementTree(root).write(file_path) #Re escribimos el xml
         print("Alquiler finalizado")
     else:
         print("Volviendo al menu de finalizacion.")
 
-
+'''
+funcion que pide un id de alquiler y si no esta finalizado lo finaliza.
+@:param root que se recorrera
+'''
 def finalizar_alquiler(root):
     done = False
     esta = False
-    alquileres = root.find("Alquileres")
+    alquileres = root.find("Alquileres") #Encontramos los alquileres
     if alquileres is not None and len(alquileres) > 0:
-        while not done:
+        while not done: #Para finalizar mas de uno si se quiere
             print("Devolucion del vehiculo.")
-            id_alquiler = Validador.validar_id()
+            id_alquiler = Validador.validar_id(root, "2")     #Se pide el id
             alquiler = alquileres.findall("Alquiler")
-            if alquiler is not None and len(alquiler) > 0:
-                for i in alquiler:
-                    if id_alquiler == i.attrib["idAlquiler"]:
-                        esta = True
-                        if not esta_finalizado(i, id_alquiler):
-                            finalizar(root, i, id_alquiler)
+            if alquiler is not None and len(alquiler) > 0:      #consequimos una lista de alquileres
+                for i in alquiler:      #Recorremos los alquileres
+                    if id_alquiler == i.attrib["idAlquiler"]: #Si el id se corresponde con el que buscamos
+                        esta = True     #Marcamos true para que luego no salte lo de que no se encontro
+                        if not esta_finalizado(i, id_alquiler): #Comprobamos si ya esta finalizado
+                            finalizar(root, i, id_alquiler) #Si no lo esta lo mandamos finalizar.
                         else:
                             print("El alquiler que desea finalizar ya fue finalizado anteriormente.")
                 if not esta:
@@ -266,15 +303,18 @@ def finalizar_alquiler(root):
     else:
         print("No hay alquileres en el sistema")
 
-
+'''
+funcion que modifica los campos de un alquiler si este no esta finalizado.
+@:param root que se reescribira y alquiler que se modificara
+'''
 def modif_alq_sin_fin(root, alquiler):
-    elec = "-1"
+    elec = ""
     while elec != "0":
-        print("1. Id Vehiculo\n2. DNI cliente\n3. Fecha de inicio\n4. Fecha de fin\n5. Kilometraje inicial\n0. Salir")
+        print("1. Id Vehiculo\n2. DNI cliente\n3. Fecha de inicio\n4. Fecha de fin\n5. Kilometraje inicial\n0. Salir") #Elecciones
         elec = input("Elija el campo que desea modificar (1/2/3/4/5/0):\n")
-        if elec == "1":
+        if elec == "1": #Echo de menos en swich.
             print("Nueva id de vehiculo")
-            id_vehiculo = Validador.validar_id()
+            id_vehiculo = Validador.validar_id(root, "2") #Pedimos el nuevo campo, comprobamos que es valido y lo sustituimos, es asi en todos.
             if id_vehiculo is not None:
                 if Utiles.si_no("Seguro que desea cambiar el id del vehiculo por " + id_vehiculo + "?"):
                     alquiler[0].text = id_vehiculo
@@ -306,18 +346,20 @@ def modif_alq_sin_fin(root, alquiler):
         elif elec == "0":
             print("Finalizando modificacion")
         prettify(root)
-        ElementTree(root).write(file_path)
+        ElementTree(root).write(file_path) #resescribimos el fichero
 
-
+'''
+funcion que modifica los campos de un alquiler si este si esta finalizado. Es como el anterior pero con mas posibilidades.
+@:param root que se reescribira y alquiler que se modificara
+'''
 def modif_alq_fin(root, alquiler):
     elec = "-1"
     while elec != "0":
-        print(
-            "1. Id Vehiculo\n2. DNI cliente\n3. Fecha de inicio\n4. Fecha de fin\n5. Kilometraje inicial\n6. Kilometraje final\n7. Fecha de devolucion\n8. Recargo0. Salir")
+        print("1. Id Vehiculo\n2. DNI cliente\n3. Fecha de inicio\n4. Fecha de fin\n5. Kilometraje inicial\n6. Kilometraje final\n7. Fecha de devolucion\n8. Recargo0. Salir")
         elec = input("Elija el campo que desea modificar (1/2/3/4/5/6/7/8/0):\n")
         if elec == "1":
             print("Nueva id de vehiculo")
-            id_vehiculo = Validador.validar_id()
+            id_vehiculo = Validador.validar_id(root, "2")
             if id_vehiculo is not None:
                 if Utiles.si_no("Seguro que desea cambiar el id del vehiculo por " + id_vehiculo + "?"):
                     alquiler[0].text = id_vehiculo
@@ -365,23 +407,24 @@ def modif_alq_fin(root, alquiler):
         elif elec == "0":
             print("Finalizando modificacion")
         prettify(root)
-        ElementTree(root).write(file_path)
+        ElementTree(root).write(file_path) #resescribimos el fichero
 
-
+'''
+funcion que busca un alquiler y se manda a modificar.
+@:param root que se recorrera en busca del alquiler a modificar.
+'''
 def modificar_alquiler(root):
     done = False
     esta = False
     alquileres = root.find("Alquileres")
-    print(len(alquileres))
-    print(type(alquileres))
-    if alquileres is not None and len(alquileres) > 0:
-        while not done:
+    if alquileres is not None and len(alquileres) > 0: #Si hay alquileres
+        while not done: #Bucle para modificar mas de uno si se quiere
             print("Modificacion de vehiculos")
-            id_alquiler = Validador.validar_id()
+            id_alquiler = Validador.validar_id(root, "2") #Pelidmos id
             alquiler = alquileres.findall("Alquiler")
-            if alquiler is not None and len(alquiler) > 0:
+            if alquiler is not None and len(alquiler) > 0: #Si hay alquiler
                 for i in alquiler:
-                    if id_alquiler == i.attrib["idAlquiler"]:
+                    if id_alquiler == i.attrib["idAlquiler"]: #Si coincide procede a comprobar si esta finalizado y mandarlo al modif correspondiente
                         esta = True
                         if not esta_finalizado(i, id_alquiler):
                             modif_alq_sin_fin(root, i)
@@ -391,16 +434,18 @@ def modificar_alquiler(root):
                             print("Modificacion realizada")
 
             if not esta and alquiler is not None and len(alquiler) > 0:
-                print("El id introducido no coincide con el de ningun alquiler")
+                print("El id introducido no coincide con el de ningun alquiler") #Por si metemos un id que no encuentra
             else:
                 print("No hay alquileres en el sistema")
-
             if not Utiles.si_no("Quiere tratar de modifucar otro alquiler?"):
                 done = True
     else:
         print("No hay alquileres en el sistema")
 
-
+'''
+funcion que actua como un menu y dispara los funcions
+@:param root que se manda por los funcions
+'''
 def menu_alquiler(root):
     choice = ""
     while choice != "0":
@@ -426,7 +471,10 @@ def menu_alquiler(root):
         else:
             print("Opcion no valida.")
 
-
+'''
+Menu con los tres tipo de busqueda
+@:param root que se manda por los funcions
+'''
 def menu_busqueda(root):
     choice = ""
     while choice != "0":
