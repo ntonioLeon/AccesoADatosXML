@@ -1,9 +1,10 @@
 import datetime
 
-'''
-funcion que pide un input, valida la longitud, y si es un dni
-'''
+
 def validar_dni():
+    """
+    funcion que pide un input, valida la longitud, y si es un dni
+    """
     cont = 0
     while cont < 3:
         dni = input(
@@ -29,11 +30,12 @@ def validar_dni():
             print("La cadena no puede tratarse de una cadena vacia o solo de espacios, Fallos = ", cont)
     return None
 
-'''
-funcion que se asegura de que la fecha introducida es correcta.
-@:param la fecha si no se mete nada es none, si se mete una entonces la fecha introducida debera ser mayor a la que entra por parametro
-'''
+
 def validar_fecha(fecha_ini=None):
+    """
+    funcion que se asegura de que la fecha introducida es correcta.
+    @:param la fecha si no se mete nada es none, si se mete una entonces la fecha introducida debera ser mayor a la que entra por parametro
+    """
     cont = 0
     anno = ""
     mes = ""
@@ -42,11 +44,12 @@ def validar_fecha(fecha_ini=None):
     fin = False
     while not fin:
         if fecha_ini is None:
-            print("La fecha constará de anno, mes y dia.") #Mensaje diferemte en base al parametro.
+            print("La fecha constará de anno, mes y dia.")  # Mensaje diferemte en base al parametro.
         else:
             print("La fecha constará de anno, mes y dia, recuerde que esta debe ser posterior a " + str(fecha_ini))
         while not check:
-            anno = input("Introduzca el anno, este debe estar comprendido entre el anno 2000 y 2050: ") #Parte de la funcion que se asegura de que el anno es correcta basicamente que es numerico y esta dentro de los limites
+            anno = input(
+                "Introduzca el anno, este debe estar comprendido entre el anno 2000 y 2050: ")  # Parte de la funcion que se asegura de que el anno es correcta basicamente que es numerico y esta dentro de los limites
             if not anno.isspace():
                 anno = anno.strip()
                 if anno.isnumeric():
@@ -66,7 +69,7 @@ def validar_fecha(fecha_ini=None):
         if cont < 3:
             check = False
             while not check:
-                mes = input("Introduzca el mes: ") #Parte de la funcion que se asegura de que el mes es correcta
+                mes = input("Introduzca el mes: ")  # Parte de la funcion que se asegura de que el mes es correcta
                 if not (mes.isspace()):
                     mes = mes.strip()
                     if mes.isnumeric():
@@ -88,7 +91,8 @@ def validar_fecha(fecha_ini=None):
             while not check:
                 if int(mes) == 1 or int(mes) == 3 or int(mes) == 5 or int(mes) == 7 or int(mes) == 8 or int(
                         mes) == 10 or int(mes) == 12:
-                    dia = input("Introduzca dia del 1 al 31: ") #Parte de la funcion que se asegura de que el dia es correcta
+                    dia = input(
+                        "Introduzca dia del 1 al 31: ")  # Parte de la funcion que se asegura de que el dia es correcta
                     if not (dia.isspace()):
                         dia = dia.strip()
                         if dia.isnumeric():
@@ -138,10 +142,10 @@ def validar_fecha(fecha_ini=None):
                 if cont == 3:
                     check = True
             if cont < 3:
-                if fecha_ini is None: #Aqui si no hay parametro retornamos la fehca si mas
+                if fecha_ini is None:  # Aqui si no hay parametro retornamos la fehca si mas
                     print("Fecha Valida.")
                     return datetime.date(int(anno), int(mes), int(dia))
-                else: #Si la fecha ha de ser comparada se compara y se comprueba que es mayor que la introducida por parametro.
+                else:  # Si la fecha ha de ser comparada se compara y se comprueba que es mayor que la introducida por parametro.
                     date = datetime.date(int(anno), int(mes), int(dia))
                     if fecha_ini < date:
                         fin = True
@@ -154,24 +158,25 @@ def validar_fecha(fecha_ini=None):
                 print("La obtencion de la fecha se suspendio debido a que se fallaron demasiadas veces seguidas.")
                 return None
 
-'''
-funcion que se asegura de que el kilometraje es correcta.
-@:param el kilometraje si no se mete nada es none, si se mete una entonces el kilometraje introducida debera ser mayor a la que entra por parametro
-'''
+
 def validar_kilometraje(km_ini=None):
+    """
+    funcion que se asegura de que el kilometraje es correcta.
+    @:param el kilometraje si no se mete nada es none, si se mete una entonces el kilometraje introducida debera ser mayor a la que entra por parametro
+    """
     cont = 0
     while cont < 3:
-        if km_ini is None: #Nos aseguramos de que el campo no esta vacio, es numerico.
+        if km_ini is None:  # Nos aseguramos de que el campo no esta vacio, es numerico.
             km = input("Introduzca un kilometraje valido, este debe ser un numero ")
         else:
             km = input("Introduzca un kilometraje valido, este debe ser un numero mayor a " + km_ini + " ")
         if len(km.strip()) > 0:
             km = km.strip()
             if km.isdigit():
-                if km_ini is None: #Si no hay parametro nada
+                if km_ini is None:  # Si no hay parametro nada
                     print("Kilometraje valido")
                     return km
-                else: #Si lo hay comprobamos que es mayor al parametetro
+                else:  # Si lo hay comprobamos que es mayor al parametetro
                     if int(km) > int(km_ini):
                         print("Kilometraje valido")
                         return km
@@ -187,10 +192,11 @@ def validar_kilometraje(km_ini=None):
     print("La obtencion del kilometrake se suspendio debido a que se fallaron demasiadas veces seguidas.")
     return None
 
-'''
-funcion que se asegura que el id existe entre los alquileres
-'''
+
 def id_existe_vehiculo(root, identificacion):
+    """
+    funcion que se asegura que el id existe entre los alquileres
+    """
     vehiculos = root.find("Vehiculos")
     if vehiculos is not None:
         vehiculo = vehiculos.findall("Vehiculo")
@@ -203,10 +209,11 @@ def id_existe_vehiculo(root, identificacion):
                         return True
     return False
 
-'''
-funcion que se asegura que el id existe entre los vehiculos
-'''
+
 def id_existe_alquiler(root, identificacion):
+    """
+    funcion que se asegura que el id existe entre los vehiculos
+    """
     alquileres = root.find("Alquileres")
     if alquileres is not None:
         alquiler = alquileres.findall("Alquiler")
@@ -219,11 +226,12 @@ def id_existe_alquiler(root, identificacion):
                         return True
     return False
 
-'''
-Funcion que se asegura de que el id es correcto por medio de ver si no esta vacio, es numerico y existe en el sistema.
-Esta funcion no se usa para crear un id (son autoincrementales), solo para buscarlos. 
-'''
+
 def validar_id(root, tipo):
+    """
+    Funcion que se asegura de que el id es correcto por medio de ver si no esta vacio, es numerico y existe en el sistema.
+    Esta funcion no se usa para crear un id (son autoincrementales), solo para buscarlos.
+    """
     cont = 0
     while cont < 3:
         identification = input("Introduzca un id valido, este debe ser un numero ")
