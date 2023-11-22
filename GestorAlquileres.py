@@ -11,8 +11,6 @@ file_path = ".\\datos.xml"
 funcion que reescribe el xml para que no este en una linea y tenga una estructura valida.
 @:param elem, el elemento que va a ser reestructurado.
 '''
-
-
 def prettify(elem, level=0):
     indent = "    "  # 4 espacios por nivel
     i = "\n" + level * indent
@@ -28,24 +26,35 @@ def prettify(elem, level=0):
             elem.tail = i
 
 
+def  esta_dispinible(root, id_vehiculo):
+    vehiculos = root.find("Vehiculos")
+    if vehiculos is not None:
+        vehiculo = vehiculos.findall("Vehiculo")  # Nos situamos en vehiculo en el arbol.
+        if vehiculo is not None:  # si hay vehiculos
+            for vehi in vehiculo:
+                for attr in vehi.attrib:  # Recorremos los atributos de los vehiculos.
+                    attr_name = attr
+                    attr_value = vehi.attrib[attr_name]
+                    if attr_value == id_vehiculo:  # si coincide con el parametro es decir lo encontramos.
+                        if vehi[4].text == "Disponible":
+                            return True
+                        else:
+                            return False
+
 '''
 funcion que recorre los alquileres para saber cual es el siguiente id valido.
 @:param root, que sera recorrido en busca de alquileres.
 @:return 1 si no hay alquileres, el ultimo id + 1 si hay alquileres.
 '''
-
-
 def obtener_ultimo_id_alquiler(root):
     alquileres = root.find('Alquileres')  # Encuentra los alquileres.
     ultimos_alquileres = alquileres.findall('Alquiler[@idAlquiler]')  # lista con los ids de los alquileres.
 
     if ultimos_alquileres:  # Si hay ids de alquiler
-        ultimo_id = max(
-            int(alquiler.get('idAlquiler')) for alquiler in ultimos_alquileres)  # Recorremos la lista de ids.
+        ultimo_id = max(int(alquiler.get('idAlquiler')) for alquiler in ultimos_alquileres)  # Recorremos la lista de ids.
         return ultimo_id + 1  # devolvemos el ultimo + 1.
     else:
         return 1  # Si no hay ids el id sera 1.
-
 
 '''
 funcion que a partir de un id devuelve el precio del vehiculo.
@@ -55,13 +64,33 @@ funcion que a partir de un id devuelve el precio del vehiculo.
 def conseguir_precio_por_id(root, id_vehiculo):
     vehiculos = root.find("Vehiculos")
     if vehiculos is not None:
-        vehiculo = vehiculos.find("Vehiculo")  # Nos situamos en vehiculo en el arbol.
+        vehiculo = vehiculos.findall("Vehiculo")  # Nos situamos en vehiculo en el arbol.
         if vehiculo is not None:  # si hay vehiculos
-            for attr in vehiculo.attrib:  # Recorremos los atributos de los vehiculos.
-                attr_name = attr
-                attr_value = vehiculo.attrib[attr_name]
-                if attr_value == id_vehiculo:  # si coincide con el parametro es decir lo encontramos.
-                    return vehiculo[3].text  # devolvemos el precio.
+            for vehi in vehiculo:
+                for attr in vehi.attrib:  # Recorremos los atributos de los vehiculos.
+                    attr_name = attr
+                    attr_value = vehi.attrib[attr_name]
+                    if attr_value == id_vehiculo:  # si coincide con el parametro es decir lo encontramos.
+                        return vehi[3].text  # devolvemos el precio.
+
+'''
+Metodo que re escribre el estado de los coches una vez son alquilados
+@:param root se recorre, id_vehiculo identifica, estado marca la accion a realizar
+'''
+def cambiarDisponibilidad(root, id_vehiculo, estado):
+    vehiculos = root.find("Vehiculos")
+    if vehiculos is not None:
+        vehiculo = vehiculos.findall("Vehiculo")
+        if vehiculo is not None:
+            for vehi in vehiculo:
+                for attr in vehi.attrib:
+                    attr_name = attr
+                    attr_value = vehi.attrib[attr_name]
+                    if attr_value == id_vehiculo:
+                        if str(estado) == "Alquilado": #Me encantaria saber por que si no casteo el estado falla...
+                            vehi[4].text = "Alquilado"
+                        elif str(estado) == "Disponible":
+                            vehi[4].text = "Disponible"
 
 
 '''
@@ -109,6 +138,9 @@ def crear_alquiler(root):
     print("Creacion de alquileres")
     while not done:  # Bucle que servira para realizar mas de un alquiler
         id_del_vehiculo = Validador.validar_id(root, "1")  # En estas lineas nos apoyaremos en los funcions de Validador para conseguir campos correctos
+        if not esta_dispinible(root, id_del_vehiculo):
+            print("El vehiculo no esta disponible para ser alquilado")
+            id_del_vehiculo = None
         if id_del_vehiculo is not None:
             dni_del_cliente = Validador.validar_dni()
         if id_del_vehiculo is not None and dni_del_cliente is not None:
@@ -148,6 +180,7 @@ def crear_alquiler(root):
             castear de date a int explota y concluye multiplicando los dias por el precio/dia del vehiculo.'''
             precio = int(str((fecha_del_fin - fecha_del_ini).days)) * float(str(conseguir_precio_por_id(root, id_del_vehiculo)))
             precio_final.text = str(precio)
+            cambiarDisponibilidad(root, id_del_vehiculo, "Alquilado") #Cambiamos el estado del vehuiculo
 
             prettify(root)  # Re hacemos la estructura del xml
             ElementTree(root).write(file_path)  # Escribimos el archivo
@@ -267,6 +300,8 @@ def finalizar(root, alquiler, id_alquiler):
             recargo.text = "50"
         else:
             recargo.text = "Sin recargo"
+        cambiarDisponibilidad(root, alquiler[0].text, "Disponible") #Cambiamos el estado del vehuiculo
+
         prettify(root)
         ElementTree(root).write(file_path) #Re escribimos el xml
         print("Alquiler finalizado")

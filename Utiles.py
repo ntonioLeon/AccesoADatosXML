@@ -1,4 +1,4 @@
-import AntonioWorkSpace
+import GestorAlquileres
 import YuriWorkSpace
 
 
@@ -36,7 +36,7 @@ def menu_basico():
         # if choice == "1":
         # YuriWorkSpace.menu_vehiculo()
         if choice == "2":
-            AntonioWorkSpace.menu_alquiler(root)
+            GestorAlquileres.menu_alquiler(root)
         elif choice == "0":
             print("Saliendo del programa. Hasta luego!")
         else:

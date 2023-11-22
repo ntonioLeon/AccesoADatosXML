@@ -85,20 +85,30 @@ def mostrar_todos():
 
     if vehiculos is not None:
         for vehiculo in vehiculos.findall('Vehiculo'):
-            print("\nID de VehÃ­culo:", vehiculo.get('idVehiculo'))
+            print("\nID de Vehículo:", vehiculo.get('idVehiculo'))
             for element in vehiculo:
                 print(f"{element.tag}: {element.text}")
 
 
 '''
 vehicle_data = {
-    'Matricula': 'ABC665',
+    'Matricula': 'ABC666',
     'MarcaModelo': 'Honda Civic',
     'AnnoFabricacion': '2006',
     'TarifaDia': '250.00',
     'Estado': 'Disponible'
 }
+
+vehicle_data2 = {
+    'Matricula': 'ABC667',
+    'MarcaModelo': 'Honda Civic',
+    'AnnoFabricacion': '2004',
+    'TarifaDia': '150.00',
+    'Estado': 'Disponible'
+}
+
 cargar_arbol_xml()
 crear_vehiculo(vehicle_data)
+crear_vehiculo(vehicle_data2)
 mostrar_todos()
 '''

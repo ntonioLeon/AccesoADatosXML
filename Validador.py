@@ -193,13 +193,14 @@ funcion que se asegura que el id existe entre los alquileres
 def id_existe_vehiculo(root, identificacion):
     vehiculos = root.find("Vehiculos")
     if vehiculos is not None:
-        vehiculo = vehiculos.find("Vehiculo")
+        vehiculo = vehiculos.findall("Vehiculo")
         if vehiculo is not None:
-            for attr in vehiculo.attrib:
-                attr_name = attr
-                attr_value = vehiculo.attrib[attr_name]
-                if attr_value == identificacion:
-                    return True
+            for vehi in vehiculo:
+                for attr in vehi.attrib:
+                    attr_name = attr
+                    attr_value = vehi.attrib[attr_name]
+                    if attr_value == identificacion:
+                        return True
     return False
 
 '''
@@ -208,13 +209,14 @@ funcion que se asegura que el id existe entre los vehiculos
 def id_existe_alquiler(root, identificacion):
     alquileres = root.find("Alquileres")
     if alquileres is not None:
-        alquiler = alquileres.find("Alquiler")
+        alquiler = alquileres.findall("Alquiler")
         if alquiler is not None:
-            for attr in alquiler.attrib:
-                attr_name = attr
-                attr_value = alquiler.attrib[attr_name]
-                if attr_value == identificacion:
-                    return True
+            for alq in alquiler:
+                for attr in alq.attrib:
+                    attr_name = attr
+                    attr_value = alq.attrib[attr_name]
+                    if attr_value == identificacion:
+                        return True
     return False
 
 '''
