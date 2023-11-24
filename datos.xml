@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Renting>
+    <Vehiculos>
+        <Vehiculo idVehiculo="1">
+            <Matricula>hhh222</Matricula>
+            <MarcaModelo>hh hh</MarcaModelo>
+            <AnnoFabricacion>2000</AnnoFabricacion>
+            <TarifaDia>75.00</TarifaDia>
+            <Estado>Disponible</Estado>
+        </Vehiculo>
+    </Vehiculos>
+    <Alquileres></Alquileres>
+</Renting>

@@ -5,6 +5,9 @@ import random
 import string
 import Utiles
 
+def path():
+    return ".\\datos.xml"
+
 
 def cargar_arbol_xml():
     if not os.path.exists(Utiles.path()):

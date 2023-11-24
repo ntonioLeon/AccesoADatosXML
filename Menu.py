@@ -1,6 +1,5 @@
 import CRUD_Vehiculo
 
-
 def tres_opciones():
     """
     Metodo que apoya a los menus en la entrada de teclado
@@ -56,7 +55,10 @@ def seis_opciones(cadena):
     """
     fallos=0
     while True:
-        respuesta = input(cadena)
+        if cadena is not None:
+            respuesta = input(cadena)
+        else:
+            respuesta = input()
         if respuesta == "0":
             return "0"
         elif respuesta  == '1':
@@ -623,7 +625,8 @@ def menu_vehiculo(root):
     """
     retroceso= False
     while not retroceso:
-        respuesta = seis_opciones(mostar_menu_vehiculo())
+        mostar_menu_vehiculo()
+        respuesta = seis_opciones(None)
 
         if respuesta== "0":
             retroceso= True

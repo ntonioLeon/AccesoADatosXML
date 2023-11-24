@@ -1,5 +1,7 @@
 import GestorAlquileres
-import YuriWorkSpace
+
+def path():
+    return ".\\datos.xml"
 
 
 # Validadores
