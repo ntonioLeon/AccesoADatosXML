@@ -7,20 +7,26 @@ def tres_opciones():
     """
     fallos=0
     while True:
-        respuesta = input("\n\tSeleccione una opcion para continuar.\n")
+        print("╔════════════════════════════════╗")
+        print("║Seleccione para continuar       ║")
+        respuesta = input("║ Opcion:")
         if respuesta == "0":
-            return 0
+            return "0"
         elif respuesta  == '1':
-            return 1
+            return "1"
         elif respuesta == '2':
-            return 2
+            return "2"
         else:
-            if fallos==3:
-                return 0
+            fallos += 1
+            if fallos >=5:
+                print("║ LLevas "+str(fallos)+" fallos, consecutivos"+" "*(2-len(str(fallos)))+" ║")
+                print("║ Introduzca una opcion valida   ║")
+                print("║            POR FAVOR           ║")
+                print("╚════════════════════════════════╝")
             else:
-                print("Introduzca una opcion valida.")
-                mostar_menu_vehiculo()
-                fallos += 1
+                print("║ LLevas "+str(fallos)+" fallos, consecutivos"+" "*(2-len(str(fallos)))+" ║")
+                print("║ Introduzca una opcion valida:  ║")
+                print("╚════════════════════════════════╝")
 
 
 def cinco_opciones(cadena):
@@ -32,20 +38,21 @@ def cinco_opciones(cadena):
     while True:
         respuesta = input(cadena)
         if respuesta == "0":
-            return 0
+            return "0"
         elif respuesta  == '1':
-            return 1
+            return "1"
         elif respuesta == '2':
-            return 2
+            return "2"
         elif respuesta == '3':
-            return 3
+            return "3"
         elif respuesta == '4':
-            return 4
+            return "4"
         else:
             if fallos==3:
                 return 0
             else:
                 print("║  Introduzca una opcion valida:")
+                print("╚════════════════════════════════╝")
 
 
 def seis_opciones(cadena):
@@ -76,6 +83,7 @@ def seis_opciones(cadena):
                 return 0
             else:
                 print("║  Introduzca una opcion valida:")
+                print("╚════════════════════════════════╝")
 
 
 def fails(fallos, modificacion):
@@ -651,8 +659,66 @@ def menu_vehiculo(root):
             menu_mostrar_vehiculo(root)
 
 
+def menu_alquiler(root):
+    """
+    Se trata de un meno que gestiona los metodos de CRUD de vehiculos
+    :return: None
+    """
+    retroceso= False
+    while not retroceso:
+        mostar_menu_alquileres()
+        respuesta = seis_opciones(None)
+
+        if respuesta== "0":
+            retroceso= True
+
+        elif respuesta=="1":
+            menu_alta_vehiculo(root)
 
 
+        elif respuesta == "2":
+            menu_buscar_vehiculo(root)
+
+
+        elif respuesta == "3":
+            menu_modificar_vehiculo(root)
+
+
+        elif respuesta == "4":
+            menu_eliminar_vehiculo(root)
+
+
+        elif respuesta == "5":
+            menu_mostrar_vehiculo(root)
+
+
+def menu_principal(root):
+    """
+    Se trata de un meno que gestiona los metodos de CRUD de vehiculos
+    :return: None
+    """
+    retroceso= False
+    while not retroceso:
+        mostar_menu_principal()
+        respuesta = tres_opciones()
+
+        if respuesta== "0":
+            print("╠════════════════════════════════╣")
+            print("║         Menu Principal         ║")
+            print("╠════════════════════════════════╣")
+            print("║              ----              ║")
+            print("║ Cerrando el programa...        ║")
+            print("╚════════════════════════════════╝")
+            retroceso= True
+
+        elif respuesta=="1":
+            menu_vehiculo(root)
+
+        elif respuesta == "2":
+            menu_alquiler(root)
+
+        elif respuesta == "3":
+            retroceso = True
 
 
 def menu_basico():
@@ -685,4 +751,4 @@ root = CRUD_Vehiculo.cargar_arbol_xml()
 #menu_buscar_vehiculo(root)
 #menu_eliminar_vehiculo(root)
 #menu_mostrar_vehiculo(root)
-menu_vehiculo(root)
+menu_principal(root)
