@@ -398,6 +398,7 @@ def modificar_vehiculo(root, matricula, datos):
                 if elemento is not None:
                     # Actualizar el valor existente
                     elemento.text = str(value)
+
                 else:
                     # Crear un nuevo elemento si no existe
                     nuevo = ET.Element(key)
