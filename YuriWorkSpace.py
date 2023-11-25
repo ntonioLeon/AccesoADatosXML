@@ -3,21 +3,22 @@ from datetime import datetime
 import os
 import random
 import string
-import Utiles
+import Menus
+import Validador
 
-def path():
-    return ".\\datos.xml"
+
+path = ".\\datos.xml"
 
 
 def cargar_arbol_xml():
-    if not os.path.exists(Utiles.path()):
+    if not os.path.exists(path):
         root = ET.Element('Renting')
         vehiculos = ET.SubElement(root, 'Vehiculos')
         alquileres = ET.SubElement(root, 'Alquileres')
         tree = ET.ElementTree(root)
-        tree.write(Utiles.path(), encoding="utf-8", xml_declaration=True, method="xml", short_empty_elements=False)
+        tree.write(path, encoding="utf-8", xml_declaration=True, method="xml", short_empty_elements=False)
     else:
-        tree = ET.parse(Utiles.path())
+        tree = ET.parse(path)
         root = tree.getroot()
         vehiculos = root.find('Vehiculos')
         alquileres = root.find('Alquileres')
@@ -26,7 +27,7 @@ def cargar_arbol_xml():
             vehiculos = ET.SubElement(root, 'Vehiculos')
         if alquileres is None:
             alquileres = ET.SubElement(root, 'Alquileres')
-        tree.write(Utiles.path(), encoding="utf-8", xml_declaration=True, method="xml", short_empty_elements=False)
+        tree.write(path, encoding="utf-8", xml_declaration=True, method="xml", short_empty_elements=False)
     prettify(root)
     return root
 
@@ -49,7 +50,7 @@ def prettify(elem, level=0):
 
 
 def obtener_ultimo_id():
-    tree = ET.parse(Utiles.path())
+    tree = ET.parse(path)
     root = tree.getroot()
 
     vehiculos = root.find('Vehiculos')
@@ -79,11 +80,11 @@ def crear_vehiculo(vehiculo, root):
 
     prettify(root)
 
-    tree.write(Utiles.path())
+    tree.write(path)
 
 
 def mostrar_todos():
-    tree = ET.parse(Utiles.path())
+    tree = ET.parse(path)
     root = tree.getroot()
 
     vehiculos = root.find('Vehiculos')
@@ -96,7 +97,7 @@ def mostrar_todos():
 
 
 def buscar_vehiculo(matricula):
-    tree = ET.parse(Utiles.path())
+    tree = ET.parse(path)
     root = tree.getroot()
 
     vehiculos = root.find('Vehiculos')
@@ -114,7 +115,7 @@ def buscar_vehiculo(matricula):
 
 
 def obtener_id_por_matricula(matricula):
-    tree = ET.parse(Utiles.path())
+    tree = ET.parse(path)
     root = tree.getroot()
 
     vehiculos = root.find('Vehiculos')
@@ -138,24 +139,23 @@ def verificar_matricula(cadena):
 
 
 def matricula_en_uso(matricula, root):
-        try:
-            tree = ET.ElementTree(root)
-            vehiculos = tree.find('.//Vehiculos')
-            if vehiculos is not None:
-                for vehiculo in vehiculos.findall('.//Vehiculo/Matricula'):
-                    if vehiculo.text == matricula:
-                        return True
-            return False
-        except Exception as e:
-            print(f"Error al verificar matrícula: {e}")
-            return False
-
+    try:
+        tree = ET.ElementTree(root)
+        vehiculos = tree.find('.//Vehiculos')
+        if vehiculos is not None:
+            for vehiculo in vehiculos.findall('.//Vehiculo/Matricula'):
+                if vehiculo.text == matricula:
+                    return True
+        return False
+    except Exception as e:
+        print(f"Error al verificar matrícula: {e}")
+        return False
 
 
 def entrada_teclado(campo):
     contador = 0
     while True:
-        entrada = input("Introduce una  "+campo+": ")
+        entrada = input("Introduce una  " + campo + ": ")
         if entrada.strip():
             return entrada
         else:
@@ -175,7 +175,7 @@ def isdecima(num):
     try:
         numero = int(num)
         if 50 <= numero <= 250:
-            return str(numero)+".00"
+            return str(numero) + ".00"
     except ValueError:
         try:
             numero = float(num)
@@ -206,7 +206,6 @@ def alta_datos(root):
             elif matricula_en_uso(matricula, root):
                 print("La matricula ya esta en uso")
                 fallos = fails(fallos, "Alta")
-
 
             if fallos == 3:
                 print("Ha alcanzado el máximo de intentos. Saliendo del proceso de alta.")
@@ -251,11 +250,12 @@ def alta_datos(root):
             fallos = 0
             exito = False
             while not exito:
-                anno = input("Introduzca una fecha de fabricacion valida. Recuerde nuestros modelos abarcan entre 1970 y 2023")
+                anno = input(
+                    "Introduzca una fecha de fabricacion valida. Recuerde nuestros modelos abarcan entre 1970 y 2023")
                 if anno is not None:
                     if anno.isnumeric():
-                        anno= int(anno)
-                        if 1970 <= anno <=2023:
+                        anno = int(anno)
+                        if 1970 <= anno <= 2023:
                             print("**Fecha de fabricacion introducida con exito")
                             exito = True
                         else:
@@ -296,7 +296,7 @@ def alta_datos(root):
             vehicle = {'Matricula': matricula, 'MarcaModelo': marca, 'AnnoFabricacion': anno, 'TarifaDia': tarifa,
                        'Estado': 'Disponible'}
             print(vehicle)
-            if Utiles.si_no("Desea agregar un nuevo vehiculo con estas caracteristicas?"):
+            if Validador.si_no("Desea agregar un nuevo vehiculo con estas caracteristicas?"):
                 crear_vehiculo(vehicle, root)
                 print("** Nuevo vehiculo agregado")
                 retorno = True
@@ -304,14 +304,12 @@ def alta_datos(root):
                 print("Alta cancelada")
                 retorno = True
             if retorno:
-                if Utiles.si_no("Desea volver a agregar un nuevo vehiculo?"):
+                if Validador.si_no("Desea volver a agregar un nuevo vehiculo?"):
                     print("Volviendo al menu principal")
                     retono = False
                 else:
                     print("Volviendo al menu principal")
                     renuncia = True
-
-
 
 
 def eliminar_vehiculo(root, id_vehiculo):
@@ -341,7 +339,7 @@ def eliminar_vehiculo(root, id_vehiculo):
 
         # No es necesario crear un nuevo ElementTree, usa el mismo árbol
         tree = ET.ElementTree(root)
-        tree.write(Utiles.path())
+        tree.write(path)
     except Exception as e:
         print(f"Error al procesar el XML: {e}")
 
@@ -371,7 +369,7 @@ def modificar_vehiculo(root, matricula, datos):
 
         prettify(root)
         tree = ET.ElementTree(root)
-        tree.write(Utiles.path())
+        tree.write(path)
         print(f"Vehículo con matrícula {matricula} modificado correctamente.")
     except Exception as e:
         print(f"Error al procesar el XML: {e}")
@@ -384,19 +382,26 @@ vehicle_data = {
     'TarifaDia': '50.00',
     'Estado': 'Disponible'
 }
+vehicle_data2 = {
+    'Matricula': 'ABC667',
+    'MarcaModelo': 'Honda Civic',
+    'AnnoFabricacion': '2004',
+    'TarifaDia': '150.00',
+    'Estado': 'Disponible'
+}
 
 root = cargar_arbol_xml()
 tree = ET.ElementTree(root)
-#alta_datos(root)
+# alta_datos(root)
 eliminar_vehiculo(root, obtener_id_por_matricula("SHN034"))
-modificar_vehiculo(root, "ABC665",vehicle_data)
+modificar_vehiculo(root, "ABC665", vehicle_data)
 """
 if(vehi is not None):
     
     buscar_vehiculo(vehi['Matricula'])
     print(obtener_id_por_matricula(vehi['Matricula']))
 """
-#mostrar_todos()
+# mostrar_todos()
 print("----------" * 20)
 
 print("----------" * 20)
@@ -583,4 +588,17 @@ def generar_coche(root):
     return {'Matricula': matricula, 'MarcaModelo': marca, 'AnnoFabricacion': anno, 'TarifaDia': tarifa,
             'Estado': 'Disponible'}"""
 
+'''
+vehicle_data = {
+    'Matricula': 'ABC666',
+    'MarcaModelo': 'Honda Civic',
+    'AnnoFabricacion': '2006',
+    'TarifaDia': '250.00',
+    'Estado': 'Disponible'
+}
 
+cargar_arbol_xml()
+crear_vehiculo(vehicle_data)
+crear_vehiculo(vehicle_data2)
+mostrar_todos()
+'''

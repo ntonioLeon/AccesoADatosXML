@@ -1,7 +1,7 @@
-import Utiles
+import Menus
 
 print("Inicio proyecto")
 
-Utiles.menu_basico()
+Menus.menu_basico()
 
 print("Fin proyecto")

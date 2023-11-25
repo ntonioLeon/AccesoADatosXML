@@ -1,6 +1,23 @@
 import datetime
 
 
+# Validadores
+def si_no(cadena):
+    """
+    funcion que sirve como comprobante para las preguntas al usuario.
+    @:param cadena que se printeara junto a la pregunta.
+    """
+    print(cadena)
+    while True:
+        elec = input("Pulse 1 para si, 2 para no ")
+        if elec == "1":
+            return True
+        elif elec == '2':
+            return False
+        else:
+            print("Introduzca una opcion valida.")
+
+
 def validar_dni():
     """
     funcion que pide un input, valida la longitud, y si es un dni
@@ -66,6 +83,7 @@ def validar_fecha(fecha_ini=None):
                 print("El anno no puede tratarse de una cadena vacia o solo de espacios. Fallos = ", cont)
             if cont == 3:
                 check = True
+                fin = True
         if cont < 3:
             check = False
             while not check:
@@ -86,6 +104,7 @@ def validar_fecha(fecha_ini=None):
                     print("El mes no puede tratarse de una cadena vacia o solo de espacios. Fallos = ", cont)
                 if cont == 3:
                     check = True
+                    fin = True
         if cont < 3:
             check = False
             while not check:
@@ -141,6 +160,7 @@ def validar_fecha(fecha_ini=None):
                         print("El dia no puede tratarse de una cadena vacia o solo de espacios. Fallos = ", cont)
                 if cont == 3:
                     check = True
+                    fin = True
             if cont < 3:
                 if fecha_ini is None:  # Aqui si no hay parametro retornamos la fehca si mas
                     print("Fecha Valida.")
@@ -156,7 +176,8 @@ def validar_fecha(fecha_ini=None):
                         print("La fecha no puede ser anterior a", str(fecha_ini), ". Fallos = ", cont)
             else:
                 print("La obtencion de la fecha se suspendio debido a que se fallaron demasiadas veces seguidas.")
-                return None
+                fin = True
+    return None
 
 
 def validar_kilometraje(km_ini=None):
@@ -257,4 +278,57 @@ def validar_id(root, tipo):
             cont += 1
             print("El id no puede tratarse de una cadena vacia o solo de espacios. Fallos = ", cont)
     print("La obtencion del id se suspendio debido a que se fallaron demasiadas veces seguidas.")
+    return None
+
+
+def matricula_esite(root, mat):
+    """
+    Funcion que comprueba que una matricula existe
+    :param root: que se recorre
+    :param mat: que se comprueba
+    :return: True si exsite False si no
+    """
+    vehiculos = root.find("Vehiculos")
+    if vehiculos is None:
+        return False
+    vehiculo = vehiculos.findall("Vehiculo")
+    if vehiculo is None:
+        return False
+    for coche in vehiculo:
+        if coche[0].text == mat:
+            return True
+
+
+def validar_y_comprobar_matricula(root):
+    """
+    Funcion que se asegura de que la matricula es valida y existe.
+    :param root: que se recorrera. para comprobar su valided
+    :return: La matricula validada o None si se falla
+    """
+    cont = 0
+    while cont < 3:
+        mat = input("Introduzca la matricula del vehiculo, esta se compondra de tres letras seguidas de tres numeros: ")
+        if not mat.isspace():
+            mat = mat.strip()  # El trim de python
+            if len(mat) == 6:
+                if mat[:3].isalpha():  # Comprobamos que los valores son correcots
+                    if mat[3:6].isnumeric():
+                        if matricula_esite(root, mat):
+                            print("Matricula Valida.")
+                            return mat
+                        else:
+                            cont += 1
+                            print("La matricula introducida no se corresponde con la de ninguna matricula existente. Fallos = ", cont)
+                    else:
+                        cont += 1
+                        print("Los tres ultimos caracteres deben ser numericos. Fallos = ", cont)
+                else:
+                    cont += 1
+                    print("Los tres primeros caracteres deben ser alfabeticos. Fallos = ", cont)
+            else:
+                cont += 1
+                print("La matricula debe tener 6 caracteres. Fallos = ", cont)
+        else:
+            cont += 1
+            print("La cadena no puede tratarse de una cadena vacia o solo de espacios, Fallos = ", cont)
     return None

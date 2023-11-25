@@ -1,13 +1,63 @@
-<?xml version='1.0' encoding='utf-8'?>
 <Renting>
     <Vehiculos>
         <Vehiculo idVehiculo="1">
-            <Matricula>hhh222</Matricula>
-            <MarcaModelo>hh hh</MarcaModelo>
-            <AnnoFabricacion>2000</AnnoFabricacion>
-            <TarifaDia>75.00</TarifaDia>
+            <Matricula>ABC666</Matricula>
+            <MarcaModelo>Honda Civic</MarcaModelo>
+            <AnnoFabricacion>2006</AnnoFabricacion>
+            <TarifaDia>250.00</TarifaDia>
             <Estado>Disponible</Estado>
         </Vehiculo>
+        <Vehiculo idVehiculo="2">
+            <Matricula>ABC667</Matricula>
+            <MarcaModelo>Honda Civic</MarcaModelo>
+            <AnnoFabricacion>2004</AnnoFabricacion>
+            <TarifaDia>150.00</TarifaDia>
+            <Estado>Alquilado</Estado>
+        </Vehiculo>
     </Vehiculos>
-    <Alquileres></Alquileres>
+    <Alquileres>
+        <Alquiler idAlquiler="1">
+            <idVehiculo Matricula="ABC666">1</idVehiculo>
+            <dniCliente>12341234A</dniCliente>
+            <FechaIniAlq>2000-01-01</FechaIniAlq>
+            <FechaFinAlq>2000-01-02</FechaFinAlq>
+            <FechaDevolucion>2000-01-02</FechaDevolucion>
+            <KmInicial>12</KmInicial>
+            <KmFinal>13</KmFinal>
+            <PrecioFinal>250.0</PrecioFinal>
+            <Recargo>Sin recargo</Recargo>
+        </Alquiler>
+        <Alquiler idAlquiler="2">
+            <idVehiculo Matricula="ABC666">1</idVehiculo>
+            <dniCliente>12341234F</dniCliente>
+            <FechaIniAlq>2000-02-01</FechaIniAlq>
+            <FechaFinAlq>2000-02-02</FechaFinAlq>
+            <FechaDevolucion />
+            <KmInicial>231</KmInicial>
+            <KmFinal />
+            <PrecioFinal>150.0</PrecioFinal>
+        </Alquiler>
+        <Alquiler idAlquiler="3">
+            <idVehiculo Matricula="ABC666">1</idVehiculo>
+            <dniCliente>44444444A</dniCliente>
+            <FechaIniAlq>2000-01-13</FechaIniAlq>
+            <FechaFinAlq>2000-01-14</FechaFinAlq>
+            <FechaDevolucion>2001-01-31</FechaDevolucion>
+            <KmInicial>123</KmInicial>
+            <KmFinal>1234</KmFinal>
+            <PrecioFinal>250.0</PrecioFinal>
+            <Recargo>107240.0</Recargo>
+        </Alquiler>
+        <Alquiler idAlquiler="4">
+            <idVehiculo Matricula="ABC666">1</idVehiculo>
+            <dniCliente>32132132A</dniCliente>
+            <FechaIniAlq>2002-01-01</FechaIniAlq>
+            <FechaFinAlq>2002-01-31</FechaFinAlq>
+            <FechaDevolucion>2002-01-31</FechaDevolucion>
+            <KmInicial>12345</KmInicial>
+            <KmFinal>12346</KmFinal>
+            <PrecioFinal>7500.0</PrecioFinal>
+            <Recargo>Sin recargo</Recargo>
+        </Alquiler>
+    </Alquileres>
 </Renting>
